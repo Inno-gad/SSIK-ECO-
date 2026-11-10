@@ -28,4 +28,15 @@ object EnergyCalculator {
             else -> "High Consumption"
         }
     }
+    
+/**
+     * Helper to compute total monthly consumption across a collection of appliances.
+     * Pass a list of Pair(powerRatingWatts, hoursUsedPerDay).
+     */
+    fun calculateTotalMonthlyKwh(appliances: List<Pair<Double, Double>>): Double {
+        return appliances.sumOf { (watts, hours) ->
+            calculateMonthlyKwh(calculateDailyKwh(watts, hours))
+        }
+    }
+
 }
