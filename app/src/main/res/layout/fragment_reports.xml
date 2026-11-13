@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F4F7F6"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -10,20 +11,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="12dp"
-        android:textSize="18sp"
+        android:text="Energy Reports"
+        android:textColor="#073B3A"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <ProgressBar
         android:id="@+id/progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:indeterminateTint="#0B6E4F"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/tvMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:gravity="center"
+        android:text="No energy reports available yet."
+        android:textColor="#4A5568"
+        android:textSize="14sp"
         android:visibility="gone" />
 
     <Button
@@ -31,7 +40,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="#0B6E4F"
         android:text="Retry"
+        android:textColor="#FFFFFF"
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
