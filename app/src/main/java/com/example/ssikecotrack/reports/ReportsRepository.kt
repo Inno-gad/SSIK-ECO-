@@ -14,4 +14,4 @@ class FakeReportsRepository : ReportsRepository {
         EnergyReport("Microwave", 9.2, EnergyCalculator.calculateMonthlyCost(9.2))
     )
 }
-}
+
