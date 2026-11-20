@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "515318447961",
+    "project_id": "ssik-eco-track",
+    "storage_bucket": "ssik-eco-track.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:515318447961:android:a14c20a5ed17f1abc4d648",
+        "android_client_info": {
+          "package_name": "com.example.ssikecotrack"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqqfZrA9lRbRxYrxaPNPysh0Khm0UFOXQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
