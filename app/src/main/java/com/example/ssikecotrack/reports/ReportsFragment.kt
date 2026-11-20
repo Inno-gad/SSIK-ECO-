@@ -42,10 +42,15 @@ class ReportsFragment : Fragment(R.layout.fragment_reports) {
                     adapter.submitList(state.reports)
                     summary.text = "Total: %.1f kWh • KES %.0f".format(state.totalKwh, state.totalCost)
                 }
-                is ReportsState.Empty -> message.text = "No energy reports yet"
+                is ReportsState.Empty -> message.text = "No energy reports yet. Add appliances to see usage."
                 is ReportsState.Error -> message.text = state.message
                 else -> {}
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.load()
     }
 }

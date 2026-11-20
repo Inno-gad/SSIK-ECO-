@@ -1,8 +1,9 @@
 package com.example.ssikecotrack.reports
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
@@ -17,9 +18,9 @@ sealed class ReportsState {
     data class Error(val message: String) : ReportsState()
 }
 
-class ReportsViewModel(
-    private val repository: ReportsRepository = FakeReportsRepository()
-) : ViewModel() {
+class ReportsViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository: ReportsRepository = RoomReportsRepository(application)
 
     private val _state = MutableLiveData<ReportsState>()
     val state: LiveData<ReportsState> = _state

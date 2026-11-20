@@ -1,17 +1,42 @@
 package com.example.ssikecotrack.reports
 
+import android.content.Context
 import com.example.ssikecotrack.EnergyCalculator
+import com.example.ssikecotrack.data.AppDatabase
+import com.example.ssikecotrack.data.ApplianceRepository
+import kotlinx.coroutines.flow.first
 
 interface ReportsRepository {
     suspend fun getReports(): List<EnergyReport>
 }
 
-// Placeholder data wired to Sean's EnergyCalculator until Room DB is ready
-class FakeReportsRepository : ReportsRepository {
-    override suspend fun getReports() = listOf(
-        EnergyReport("Fridge", 42.5, EnergyCalculator.calculateMonthlyCost(42.5)),
-        EnergyReport("Television", 18.0, EnergyCalculator.calculateMonthlyCost(18.0)),
-        EnergyReport("Microwave", 9.2, EnergyCalculator.calculateMonthlyCost(9.2))
-    )
-}
+class RoomReportsRepository(context: Context) : ReportsRepository {
 
+    private val repository = ApplianceRepository(
+        AppDatabase.getInstance(context.applicationContext).applianceDao()
+    )
+
+    override suspend fun getReports(): List<EnergyReport> {
+        val appliances = repository.allAppliances.first()
+        return appliances.map { appliance ->
+            val dailyKwh = EnergyCalculator.calculateDailyKwh(
+                powerRatingWatts = appliance.wattage * appliance.quantity,
+                hoursUsedPerDay = appliance.hoursPerDay
+            )
+            val monthlyKwh = EnergyCalculator.calculateMonthlyKwh(dailyKwh)
+            val monthlyCost = EnergyCalculator.calculateMonthlyCost(monthlyKwh)
+
+            val label = if (appliance.quantity > 1) {
+                "${appliance.name} (x${appliance.quantity})"
+            } else {
+                appliance.name
+            }
+
+            EnergyReport(
+                applianceName = label,
+                kwhUsed = monthlyKwh,
+                cost = monthlyCost
+            )
+        }
+    }
+}

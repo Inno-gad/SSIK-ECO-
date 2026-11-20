@@ -74,8 +74,8 @@ class AddEditApplianceDialogFragment : DialogFragment() {
         val btnCancel: MaterialButton = view.findViewById(R.id.btnCancel)
         val btnSave: MaterialButton = view.findViewById(R.id.btnSave)
 
-        val applianceId = arguments?.getInt(ARG_APPLIANCE_ID, NO_ID) ?: NO_ID
-        if (applianceId != NO_ID) {
+        val applianceId = arguments?.getString(ARG_APPLIANCE_ID)
+        if (!applianceId.isNullOrBlank()) {
             tvFormTitle.text = "Edit Appliance"
             btnSave.text = "Update"
             loadApplianceForEdit(applianceId)
@@ -88,7 +88,7 @@ class AddEditApplianceDialogFragment : DialogFragment() {
         btnSave.setOnClickListener { validateAndSave() }
     }
 
-    private fun loadApplianceForEdit(id: Int) {
+    private fun loadApplianceForEdit(id: String) {
         viewLifecycleOwner.lifecycleScope.launch {
             val appliance = repository.getAppliance(id)
             if (appliance != null) {
@@ -155,8 +155,8 @@ class AddEditApplianceDialogFragment : DialogFragment() {
                         wattage = wattage!!,
                         hoursPerDay = hoursPerDay!!,
                         quantity = quantity!!,
-                        category = category,
-                        room = room
+                        category = category.ifEmpty { null },
+                        room = room.ifEmpty { null }
                     )
                 )
                 Toast.makeText(requireContext(), "Appliance added", Toast.LENGTH_SHORT).show()
@@ -166,8 +166,9 @@ class AddEditApplianceDialogFragment : DialogFragment() {
                     wattage = wattage!!,
                     hoursPerDay = hoursPerDay!!,
                     quantity = quantity!!,
-                    category = category,
-                    room = room
+                    category = category.ifEmpty { null },
+                    room = room.ifEmpty { null },
+                    updatedAt = System.currentTimeMillis()
                 )
                 repository.updateAppliance(updated)
                 Toast.makeText(requireContext(), "Appliance updated", Toast.LENGTH_SHORT).show()
@@ -178,13 +179,12 @@ class AddEditApplianceDialogFragment : DialogFragment() {
 
     companion object {
         private const val ARG_APPLIANCE_ID = "arg_appliance_id"
-        private const val NO_ID = -1
 
-        fun newInstance(applianceId: Int? = null): AddEditApplianceDialogFragment {
+        fun newInstance(applianceId: String? = null): AddEditApplianceDialogFragment {
             return AddEditApplianceDialogFragment().apply {
-                if (applianceId != null) {
+                if (!applianceId.isNullOrBlank()) {
                     arguments = Bundle().apply {
-                        putInt(ARG_APPLIANCE_ID, applianceId)
+                        putString(ARG_APPLIANCE_ID, applianceId)
                     }
                 }
             }

@@ -10,6 +10,7 @@ import com.example.ssikecotrack.auth.SessionManager
 import com.example.ssikecotrack.auth.SettingsFragment
 import com.example.ssikecotrack.fragments.HomeFragment
 import com.example.ssikecotrack.reports.ReportsFragment
+import com.example.ssikecotrack.ui.appliances.ApplianceListFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -42,7 +43,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_appliances -> {
-                    // Placeholder until Sky merges AppliancesFragment
+                    loadFragment(ApplianceListFragment())
                     true
                 }
                 R.id.nav_reports -> {

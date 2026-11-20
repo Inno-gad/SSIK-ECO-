@@ -7,12 +7,20 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.example.ssikecotrack.EnergyCalculator
 import com.example.ssikecotrack.R
+import com.example.ssikecotrack.data.AppDatabase
+import com.example.ssikecotrack.data.ApplianceRepository
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
     private var txtTotalConsumption: TextView? = null
+    private var txtConsumptionStatus: TextView? = null
     private var txtEstimatedCost: TextView? = null
     private var txtApplianceCount: TextView? = null
 
@@ -32,6 +40,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         txtTotalConsumption = view.findViewById(R.id.txtTotalConsumption)
+        txtConsumptionStatus = view.findViewById(R.id.txtConsumptionStatus)
         txtEstimatedCost = view.findViewById(R.id.txtEstimatedCost)
         txtApplianceCount = view.findViewById(R.id.txtApplianceCount)
 
@@ -44,9 +53,39 @@ class HomeFragment : Fragment() {
         viewReports?.setOnClickListener {
             activity?.findViewById<BottomNavigationView>(R.id.bottomNavigation)?.selectedItemId = R.id.nav_reports
         }
+
+        observeDashboardData()
     }
 
-    // Helper functions for dynamic data updating once Sean and Kayla's data layers are connected
+    private fun observeDashboardData() {
+        val repository = ApplianceRepository(
+            AppDatabase.getInstance(requireContext()).applianceDao()
+        )
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                repository.allAppliances.collect { appliances ->
+                    val totalDailyKwh = appliances.sumOf { appliance ->
+                        EnergyCalculator.calculateDailyKwh(
+                            appliance.wattage * appliance.quantity,
+                            appliance.hoursPerDay
+                        )
+                    }
+                    val totalMonthlyKwh = EnergyCalculator.calculateMonthlyKwh(totalDailyKwh)
+                    val totalMonthlyCost = EnergyCalculator.calculateMonthlyCost(totalMonthlyKwh)
+                    val totalUnits = appliances.sumOf { it.quantity }
+
+                    updateDashboardSummary(totalMonthlyKwh, totalMonthlyCost, totalUnits)
+                    txtConsumptionStatus?.text = if (appliances.isEmpty()) {
+                        "No appliances recorded yet"
+                    } else {
+                        "${EnergyCalculator.classifyConsumption(totalDailyKwh)} • Based on $totalUnits active unit(s)"
+                    }
+                }
+            }
+        }
+    }
+
     fun updateDashboardSummary(totalKwh: Double, totalCostKes: Double, applianceCount: Int) {
         txtTotalConsumption?.text = String.format("%.1f", totalKwh)
         txtEstimatedCost?.text = String.format("KES %,d", totalCostKes.toInt())
