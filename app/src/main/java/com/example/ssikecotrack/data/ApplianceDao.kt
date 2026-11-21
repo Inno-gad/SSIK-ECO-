@@ -33,7 +33,10 @@ interface ApplianceDao {
     @Query("SELECT COALESCE(SUM(wattage * hoursPerDay * quantity) / 1000.0, 0.0) FROM appliances")
     fun getTotalDailyKwh(): Flow<Double>
 
-    // For Firebase sync later
+    // For Firebase sync
     @Query("SELECT * FROM appliances WHERE synced = 0")
     suspend fun getUnsynced(): List<ApplianceEntity>
+
+    @Query("UPDATE appliances SET synced = 1 WHERE id = :id AND updatedAt = :updatedAt")
+    suspend fun markSynced(id: String, updatedAt: Long)
 }
