@@ -8,6 +8,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.ssikecotrack.R
+import com.example.ssikecotrack.data.AppDatabase
+import com.example.ssikecotrack.data.RoomAuthRepository
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
@@ -17,7 +19,9 @@ class LoginFragment(
     private val onNavigateToRegister: () -> Unit = {}
 ) : Fragment(R.layout.fragment_login) {
 
-    private val authRepository: AuthRepository = InMemoryAuthRepository()
+    private val authRepository: AuthRepository by lazy {
+        RoomAuthRepository(AppDatabase.getInstance(requireContext()).userDao())
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
